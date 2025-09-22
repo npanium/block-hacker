@@ -2,13 +2,14 @@ import { Handle, Position } from "@xyflow/react";
 import { SkillNodeData, SkillStatus } from "@/app/types/skillTree";
 import { StatusIcon } from "./StatusIcon";
 import { useGameContext } from "./GameContext";
+import { useMemo } from "react";
 
 interface SkillNodeProps {
   data: SkillNodeData;
 }
 
 export const SkillNode: React.FC<SkillNodeProps> = ({ data }) => {
-  const { purchaseSkill, canPurchaseSkill, currency } = useGameContext();
+  const { purchaseSkill, currency } = useGameContext();
   const {
     name,
     description,
@@ -20,7 +21,12 @@ export const SkillNode: React.FC<SkillNodeProps> = ({ data }) => {
   } = data;
 
   const isUnlocked = data.isUnlocked;
-  const isAvailable = canPurchaseSkill(id);
+  const isAvailable = useMemo(() => {
+    const hasEnoughSoul = currency.soul >= cost.soul;
+    const hasEnoughGods = currency.gods >= (cost.gods || 0);
+    // Add prerequisite checking here if needed
+    return hasEnoughSoul && hasEnoughGods && !isUnlocked;
+  }, [currency.soul, currency.gods, cost.soul, cost.gods, isUnlocked]);
 
   const handleClick = async (event: React.MouseEvent) => {
     console.log(`${name} clicked`);

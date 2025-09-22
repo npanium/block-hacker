@@ -25,24 +25,23 @@ import {
 import { generateEdgesForSkill } from "@/app/utils/edgeGeneration";
 
 import { SkillNode } from "./SkillNode";
-import { GameHeader } from "./GameHeader";
+
 import { CreditsDisplay } from "./CreditsDisplay";
 import { VictoryDisplay } from "./VictoryDisplay";
 
 export const SkillTree: React.FC = () => {
-  const { currency, unlockedSkills, canPurchaseSkill, isSkillUnlocked } =
-    useGameContext();
+  const { currency, unlockedSkills, isSkillUnlocked } = useGameContext();
+
+  console.log("SkillTree render - checking dependencies:");
+  console.log("unlockedSkills:", unlockedSkills);
+  console.log("isSkillUnlocked ref:", isSkillUnlocked);
 
   // Generate nodes and edges
   const { nodes, edges } = useMemo(() => {
+    console.log("useMemo is running - this should NOT spam");
     const skillsByTier = groupSkillsByTier(skillsData);
     const generatedNodes: Node[] = [];
     const generatedEdges: Edge[] = [];
-
-    // Helper function to check if skill is available (replaces isSkillAvailable)
-    const isSkillAvailable = (skill: any) => {
-      return canPurchaseSkill(skill.id);
-    };
 
     // Generate nodes with positioning
     skillsData.forEach((skill: any) => {
@@ -64,7 +63,7 @@ export const SkillTree: React.FC = () => {
         data: {
           ...skill,
           isUnlocked: isSkillUnlocked(skill.id),
-          isAvailable: isSkillAvailable(skill),
+          // isAvailable: canPurchaseSkill(skill.id),
         },
         draggable: false,
       });
@@ -73,21 +72,25 @@ export const SkillTree: React.FC = () => {
       const skillEdges = generateEdgesForSkill({
         skill,
         unlockedSkills,
-        isSkillAvailable,
+        // isSkillAvailable: (skill: any) => canPurchaseSkill(skill.id),
+        isSkillAvailable: () => true,
       });
       generatedEdges.push(...skillEdges);
     });
 
     return { nodes: generatedNodes, edges: generatedEdges };
-  }, [unlockedSkills, canPurchaseSkill, isSkillUnlocked]);
+  }, [unlockedSkills, isSkillUnlocked, skillsData]);
+  // const skillsByTier = groupSkillsByTier(skillsData);
+  // const nodes: Node[] = [];
+  // const edges: Edge[] = [];
 
   const [reactFlowNodes, setNodes] = useState(nodes);
   const [reactFlowEdges, setEdges] = useState(edges);
 
-  React.useEffect(() => {
-    setNodes(nodes);
-    setEdges(edges);
-  }, [nodes, edges]);
+  // React.useEffect(() => {
+  //   setNodes(nodes);
+  //   setEdges(edges);
+  // }, [nodes, edges]);
 
   const onNodesChange = useCallback(
     (changes: any) =>
@@ -118,7 +121,6 @@ export const SkillTree: React.FC = () => {
 
   return (
     <div className="w-screen h-screen relative overflow-hidden bg-gradient-radial from-slate-900 via-purple-900 to-blue-900">
-      <GameHeader />
       <CreditsDisplay credits={currency} />
       <VictoryDisplay unlockedGoals={unlockedGoals} />
 

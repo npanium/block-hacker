@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 import { ClickerProgression } from "../app/data/ClickerProgression";
 import { skillsData } from "@/app/data/skillsData";
@@ -12,22 +13,22 @@ import { skillsData } from "@/app/data/skillsData";
 interface GameContextType {
   // Game stats
   currency: { soul: number; gods: number };
-  setCurrency: (currency: { soul: number; gods: number }) => void;
-  score: number;
-  setScore: (score: number) => void;
+  // setCurrency: (currency: { soul: number; gods: number }) => void;
+  // score: number;
+  // setScore: (score: number) => void;
 
   // Progression system
-  progression: ClickerProgression | null;
+  // progression: ClickerProgression | null;
 
   // Skill system
   unlockedSkills: Set<string>;
   isSkillUnlocked: (skillId: string) => boolean;
 
   // Game actions
-  handleClick: () => void;
-  handleBlockDestroy: (blockData: any) => number;
+  // handleClick: () => void;
+  // handleBlockDestroy: (blockData: any) => number;
   purchaseSkill: (skillId: string) => Promise<boolean>;
-  canPurchaseSkill: (skillId: string) => boolean;
+  // canPurchaseSkill: (skillId: string) => boolean;
 
   // Game stats for rendering
   gameStats: {
@@ -157,6 +158,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const canPurchaseSkill = (skillId: string): boolean => {
+    console.log(`canPurchaseSkill called for: ${skillId}`);
     if (progressionRef.current) {
       return progressionRef.current.canPurchase(skillId);
     }
@@ -171,17 +173,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     <GameContext.Provider
       value={{
         currency,
-        setCurrency,
-        score,
-        setScore,
-        progression: progressionRef.current,
         unlockedSkills,
-        isSkillUnlocked,
-        handleClick,
-        handleBlockDestroy,
-        purchaseSkill,
-        canPurchaseSkill,
         gameStats,
+        purchaseSkill,
+        isSkillUnlocked,
       }}
     >
       {children}

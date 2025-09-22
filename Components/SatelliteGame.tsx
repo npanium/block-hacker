@@ -37,10 +37,10 @@ const SatelliteGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const {
-    score,
-    setScore,
-    handleClick: gameHandleClick,
-    handleBlockDestroy,
+    // score,
+    // setScore,
+    // handleClick: gameHandleClick,
+    // handleBlockDestroy,
     gameStats,
     currency,
   } = useGameContext();
@@ -244,7 +244,7 @@ const SatelliteGame: React.FC = () => {
                 integrity: block.integrity,
                 maxIntegrity: block.maxIntegrity,
               };
-              handleBlockDestroy(blockData);
+              // handleBlockDestroy(blockData);
 
               createDestructionParticles(block.x, block.y, "#FF073A");
             } else {
@@ -528,13 +528,13 @@ const SatelliteGame: React.FC = () => {
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     createBullet();
-    gameHandleClick(); // Trigger progression system click effects
+    // gameHandleClick();
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     createBullet();
-    gameHandleClick();
+    // gameHandleClick();
   };
 
   useEffect(() => {
@@ -571,7 +571,7 @@ const SatelliteGame: React.FC = () => {
 
       <div className="absolute top-4 right-4 text-green-400 text-lg z-10 font-bold border border-green-600 bg-gray-900/80 px-3 py-2 rounded backdrop-blur">
         <div className="text-green-300 text-sm">BLOCKS HACKED</div>
-        <div className="text-2xl text-center">{score}</div>
+        {/* <div className="text-2xl text-center">{score}</div> */}
         <div className="text-purple-300 text-sm">Souls: {currency.soul}</div>
         {currency.gods > 0 && (
           <div className="text-yellow-300 text-sm">Gods: {currency.gods}</div>
