@@ -1,0 +1,466 @@
+.skillTreeContainer {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    #0f0f23 0%,
+    #1a0b2e 25%,
+    #16213e 50%,
+    #0f3460 75%,
+    #0e4b99 100%
+  );
+  background-attachment: fixed;
+}
+
+.gameHeader {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  text-align: center;
+  color: #00ff88;
+  font-family: "Orbitron", "Courier New", monospace;
+}
+
+.gameTitle {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+  background: linear-gradient(45deg, #00ff88, #00d4ff, #ff6b35);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+.gameSubtitle {
+  font-size: 14px;
+  color: #888;
+  margin-top: 5px;
+  letter-spacing: 2px;
+}
+
+@keyframes titleGlow {
+  from {
+    filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5));
+  }
+  to {
+    filter: drop-shadow(0 0 25px rgba(0, 255, 136, 1));
+  }
+}
+
+.creditsDisplay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 1000;
+  display: flex;
+  gap: 20px;
+  background: linear-gradient(135deg, #000000cc, #1a1a2ecc);
+  padding: 15px 20px;
+  border-radius: 12px;
+  font-family: "Courier New", monospace;
+  border: 1px solid #00ff88;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.creditItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00ff88;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.creditLabel {
+  color: #888;
+  text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+}
+
+.creditValue {
+  color: #00ff88;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+  animation: creditGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes creditGlow {
+  from {
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+  }
+  to {
+    text-shadow: 0 0 15px rgba(0, 255, 136, 1), 0 0 25px rgba(0, 255, 136, 0.5);
+  }
+}
+
+.victoryDisplay {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #1a0b2edd, #16213edd);
+  padding: 15px;
+  border-radius: 12px;
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  backdrop-filter: blur(10px);
+  color: #ffd700;
+  font-family: "Courier New", monospace;
+  max-width: 300px;
+}
+
+.victoryDisplay h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.victoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.victoryItem {
+  font-size: 12px;
+  padding: 5px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 6px;
+  text-align: center;
+  animation: victoryPulse 2s ease-in-out infinite;
+}
+
+@keyframes victoryPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  }
+}
+
+.reactFlowContainer {
+  width: 100%;
+  height: 100%;
+}
+
+/* Skill Node Styles */
+.skillNode {
+  width: 200px;
+  min-height: 120px;
+  border-radius: 15px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid;
+  color: white;
+  font-family: "Courier New", monospace;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.skillNode::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.skillNode:hover::before {
+  opacity: 1;
+}
+
+/* Branch-specific styling */
+.skillNodeSpeed {
+  border-color: #d32f2f;
+  background: linear-gradient(135deg, #ffebee20, #f4433620);
+}
+
+.skillNodeData {
+  border-color: #7b1fa2;
+  background: linear-gradient(135deg, #f3e5f520, #8e24aa20);
+}
+
+.skillNodePower {
+  border-color: #ef6c00;
+  background: linear-gradient(135deg, #fff3e020, #ff980020);
+}
+
+.skillNodeNetwork {
+  border-color: #388e3c;
+  background: linear-gradient(135deg, #e0f2f120, #4caf5020);
+}
+
+.skillNodeAdvanced {
+  border-color: #ad1457;
+  background: linear-gradient(135deg, #fce4ec20, #c2185b20);
+  border-width: 3px;
+}
+
+.skillNodeSynergy {
+  border-color: #3f51b5;
+  background: linear-gradient(135deg, #e8eaf620, #536dfe20);
+  border-width: 3px;
+}
+
+.skillNodeHybrid {
+  border-color: #689f38;
+  background: linear-gradient(135deg, #f1f8e920, #8bc34a20);
+  border-width: 4px;
+}
+
+.skillNodeGoal {
+  border-width: 5px;
+  min-height: 140px;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+.skillNodeSecret {
+  border-color: #e91e63;
+  background: linear-gradient(135deg, #4a148c40, #ad145740);
+  border-width: 4px;
+  box-shadow: 0 0 25px rgba(233, 30, 99, 0.5);
+}
+
+.skillNodeUltimate {
+  border-color: #ff6d00;
+  background: linear-gradient(135deg, #00000080, #1a1a2e80);
+  border-width: 6px;
+  box-shadow: 0 0 50px rgba(255, 109, 0, 0.8);
+  animation: ultimateGlow 3s ease-in-out infinite;
+}
+
+@keyframes ultimateGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 50px rgba(255, 109, 0, 0.8);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 80px rgba(255, 109, 0, 1), 0 0 120px rgba(255, 109, 0, 0.5);
+    transform: scale(1.02);
+  }
+}
+
+.skillNodeLocked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.skillNodeAvailable {
+  cursor: pointer;
+  animation: availablePulse 2s ease-in-out infinite;
+}
+
+@keyframes availablePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 107, 53, 0.7),
+      0 0 50px rgba(255, 107, 53, 0.3);
+  }
+}
+
+.skillNodeAvailable:hover {
+  transform: scale(1.05);
+}
+
+.skillNodeUnlocked {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  cursor: default;
+}
+
+.skillNodeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.skillNodeIcon {
+  margin-right: 8px;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  color: currentColor;
+}
+
+.skillNodeGoal .skillNodeIcon {
+  color: #ffd700;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+}
+
+.skillNodeUltimate .skillNodeIcon {
+  color: #ff6d00;
+  filter: drop-shadow(0 0 15px rgba(255, 109, 0, 1));
+  animation: iconGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes iconGlow {
+  from {
+    filter: drop-shadow(0 0 15px rgba(255, 109, 0, 1));
+  }
+  to {
+    filter: drop-shadow(0 0 25px rgba(255, 109, 0, 1))
+      drop-shadow(0 0 35px rgba(255, 109, 0, 0.5));
+  }
+}
+
+.skillNodeName {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.2;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skillNodeGoal .skillNodeName {
+  font-size: 12px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+  color: #ffd700;
+}
+
+.skillNodeUltimate .skillNodeName {
+  font-size: 13px;
+  text-shadow: 0 0 15px rgba(255, 109, 0, 1);
+  color: #ff6d00;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  from {
+    text-shadow: 0 0 15px rgba(255, 109, 0, 1);
+  }
+  to {
+    text-shadow: 0 0 25px rgba(255, 109, 0, 1), 0 0 35px rgba(255, 109, 0, 0.5);
+  }
+}
+
+.skillNodeCost {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cost {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-align: center;
+  min-width: 30px;
+  text-shadow: 0 0 5px currentColor;
+}
+
+.costSoul {
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.costGods {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.skillNodeDescription {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.skillNodeGoal .skillNodeDescription {
+  color: #ffd700;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.skillNodeUltimate .skillNodeDescription {
+  color: #ff6d00;
+  font-weight: bold;
+  font-style: normal;
+  text-shadow: 0 0 8px rgba(255, 109, 0, 0.5);
+}
+
+.skillNodeStatus {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #00ff88, #10b981);
+  color: #000;
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.skillNodeStatusIcon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .skillNode {
+    width: 180px;
+    min-height: 110px;
+    padding: 12px;
+  }
+
+  .skillNodeName {
+    font-size: 12px;
+  }
+
+  .skillNodeDescription {
+    font-size: 10px;
+  }
+
+  .gameTitle {
+    font-size: 24px;
+  }
+
+  .creditsDisplay {
+    top: 10px;
+    left: 10px;
+    padding: 12px 16px;
+  }
+
+  .victoryDisplay {
+    top: 60px;
+    right: 10px;
+    max-width: 250px;
+  }
+
+  .creditItem {
+    font-size: 14px;
+  }
+}
