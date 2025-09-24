@@ -8,12 +8,15 @@ import React, {
   useCallback,
 } from "react";
 import { ClickerProgression } from "../app/data/ClickerProgression";
-import { skillsData } from "@/app/data/skillsData";
+import { skillsData } from "@/app/data/SkillsData";
+import { PlayerDecisionState } from "@/app/types/DecisionTree";
 
 interface GameContextType {
   // Game stats
   currency: { soul: number; gods: number };
-  // setCurrency: (currency: { soul: number; gods: number }) => void;
+  setCurrency: React.Dispatch<
+    React.SetStateAction<{ soul: number; gods: number }>
+  >;
   // score: number;
   // setScore: (score: number) => void;
 
@@ -29,8 +32,10 @@ interface GameContextType {
   // handleBlockDestroy: (blockData: any) => number;
   purchaseSkill: (skillId: string) => Promise<boolean>;
   // canPurchaseSkill: (skillId: string) => boolean;
-
-  // Game stats for rendering
+  totalBlocksDestroyed: number;
+  setTotalBlocksDestroyed: React.Dispatch<React.SetStateAction<number>>;
+  playerDecisionState: PlayerDecisionState;
+  setPlayerDecisionState: (state: PlayerDecisionState) => void;
   gameStats: {
     clickDamage: number;
     passiveIncome: number;
@@ -46,7 +51,7 @@ const GameContext = createContext<GameContextType | null>(null);
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [currency, setCurrency] = useState({ soul: 100, gods: 0 }); // Start with some currency
+  const [currency, setCurrency] = useState({ soul: 0, gods: 0 });
   const [score, setScore] = useState(0);
   const [unlockedSkills, setUnlockedSkills] = useState<Set<string>>(new Set());
   const progressionRef = useRef<ClickerProgression | null>(null);
@@ -58,6 +63,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     specialEffects: [] as string[],
     autoClickRate: 0,
   });
+  const [totalBlocksDestroyed, setTotalBlocksDestroyed] = useState(0);
+  const [playerDecisionState, setPlayerDecisionState] =
+    useState<PlayerDecisionState>({
+      currentStage: 1,
+      selectedChoices: [],
+      evilPoints: 0,
+      redemptionPoints: 0,
+      pathAlignment: "neutral",
+      unlockedChoices: [],
+      weaponUpgrades: {
+        autoBullets: false,
+        piercingBullets: false,
+        explosiveBullets: false,
+        damageMultiplier: 1.0,
+        bulletCountBonus: 0,
+        fireRateBonus: 0,
+        explosionRadius: 0,
+        pierceCount: 0,
+      },
+    });
 
   // Initialize progression system
   useEffect(() => {
@@ -173,10 +198,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     <GameContext.Provider
       value={{
         currency,
+        setCurrency,
         unlockedSkills,
         gameStats,
         purchaseSkill,
         isSkillUnlocked,
+        totalBlocksDestroyed,
+        setTotalBlocksDestroyed,
+        playerDecisionState,
+        setPlayerDecisionState,
       }}
     >
       {children}

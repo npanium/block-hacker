@@ -9,7 +9,7 @@ import {
   Sword,
   Swords,
 } from "lucide-react";
-import { SkillData } from "@/app/types/skillTree";
+import { SkillData } from "@/app/types/SkillTree";
 
 export const skillsData: SkillData[] = [
   // Tier 1 - Starting exploits

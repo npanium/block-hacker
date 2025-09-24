@@ -1,5 +1,5 @@
 import React from "react";
-import { SkillStatus } from "@/app/types/skillTree";
+import { SkillStatus } from "@/app/types/SkillTree";
 
 interface StatusIconProps {
   status: SkillStatus;

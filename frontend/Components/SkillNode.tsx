@@ -1,5 +1,5 @@
 import { Handle, Position } from "@xyflow/react";
-import { SkillNodeData, SkillStatus } from "@/app/types/skillTree";
+import { SkillNodeData, SkillStatus } from "@/app/types/SkillTree";
 import { StatusIcon } from "./StatusIcon";
 import { useGameContext } from "./GameContext";
 import { useMemo } from "react";

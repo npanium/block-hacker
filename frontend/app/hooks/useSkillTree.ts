@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Credits, SkillData } from "@/app/types/skillTree";
+import { Credits, SkillData } from "@/app/types/SkillTree";
 
 export const useSkillTree = (
   initialCredits: Credits = { soul: 50000, gods: 5000 }

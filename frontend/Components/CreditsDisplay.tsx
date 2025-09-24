@@ -1,4 +1,4 @@
-import { Credits } from "@/app/types/skillTree";
+import { Credits } from "@/app/types/SkillTree";
 
 interface CreditsDisplayProps {
   credits: Credits;

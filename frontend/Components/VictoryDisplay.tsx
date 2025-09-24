@@ -1,5 +1,5 @@
 import { TrophyIcon } from "lucide-react";
-import { SkillData } from "@/app/types/skillTree";
+import { SkillData } from "@/app/types/SkillTree";
 
 interface VictoryDisplayProps {
   unlockedGoals: SkillData[];

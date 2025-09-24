@@ -15,8 +15,8 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { skillsData } from "@/app/data/skillsData";
-import { SkillData } from "@/app/types/skillTree";
+import { skillsData } from "@/app/data/SkillsData";
+import { SkillData } from "@/app/types/SkillTree";
 import { useGameContext } from "./GameContext";
 import {
   calculateNodePosition,
