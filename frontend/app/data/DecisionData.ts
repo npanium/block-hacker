@@ -339,7 +339,7 @@ export function getAvailableChoices(
 
   for (const stage of DECISION_STAGES) {
     // Check if stage is unlocked
-    console.log("[Decision Data] totalBlocksDestroyed: ", totalBlocksDestroyed);
+    // console.log("[Decision Data] totalBlocksDestroyed: ", totalBlocksDestroyed);
     if (totalBlocksDestroyed >= stage.requiredProgress) {
       for (const choice of stage.choices) {
         // Skip if already selected

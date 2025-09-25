@@ -21,6 +21,7 @@ import DecisionSystem from "./DecisionSystem";
 import { DecisionChoice } from "@/app/types/DecisionTree";
 import { determinePathAlignment } from "@/app/data/DecisionData";
 import { ProofButtonWithAggregation } from "./ProofButtonWithAggregation";
+import { AirdropButton } from "./AirdropButton";
 
 const SatelliteGame: React.FC = () => {
   const { isConnected, isConnecting } = useAccount();
@@ -44,6 +45,7 @@ const SatelliteGame: React.FC = () => {
   const [gameInitialized, setGameInitialized] = useState<boolean>(false);
   const [gameStartTime] = useState(Date.now());
   const [totalClicks, setTotalClicks] = useState(0);
+  const [proofResult, setProofResult] = useState<any>(null);
 
   // Game systems - only create when wallet connected
   const spaceshipRenderer = useRef<SpaceshipRenderer | null>(null);
@@ -599,12 +601,12 @@ const SatelliteGame: React.FC = () => {
     if (totalChoices >= 15) newPlayerState.currentStage = 4;
     if (totalChoices >= 20) newPlayerState.currentStage = 5;
 
-    console.log("Before update:", playerDecisionState.weaponUpgrades);
-    console.log("Choice effects:", effects);
+    // console.log("Before update:", playerDecisionState.weaponUpgrades);
+    // console.log("Choice effects:", effects);
 
     setPlayerDecisionState(newPlayerState);
 
-    console.log("Choice applied:", choice.title, "New state:", newPlayerState);
+    // console.log("Choice applied:", choice.title, "New state:", newPlayerState);
   };
 
   // Show wallet connection screen if not connected
@@ -715,10 +717,18 @@ const SatelliteGame: React.FC = () => {
           startTime={gameStartTime}
           totalClicks={totalClicks}
           onProofGenerated={(proof) => {
-            console.log("Proof generated with aggregation:", proof);
-            // TODO: Submit to your smart contract or store the result
+            // console.log("Proof generated with aggregation:", proof);
+            setProofResult(proof);
           }}
         />
+        {proofResult?.proofVerified && (
+          <div className="mt-4">
+            <AirdropButton
+              proofResult={proofResult}
+              blocksDestroyed={totalBlocksDestroyed}
+            />
+          </div>
+        )}
       </div>
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-cyan-500 text-xs opacity-70">
         NEURAL LINK ESTABLISHED • MODULAR SPACESHIP SYSTEM ACTIVE
