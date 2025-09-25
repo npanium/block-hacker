@@ -22,11 +22,11 @@ interface AirdropRequest {
   proofData?: {
     aggregation_id?: number;
     domain_id?: number;
-    aggregation_details?: {
+    aggregationDetails?: {
       leaf: string;
-      leaf_index: number;
-      number_of_leaves: number;
-      merkle_proof: string[];
+      leafIndex: number;
+      numberOfLeaves: number;
+      merkleProof: string[];
     };
     verification_result?: {
       is_valid: boolean;
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check for zkVerify aggregation details
-    if (!proofData?.aggregation_details) {
+    if (!proofData?.aggregationDetails) {
       return NextResponse.json(
         {
           error: "Missing zkVerify aggregation details",
@@ -67,13 +67,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const aggregationDetails = proofData.aggregation_details;
+    const aggregationDetails = proofData.aggregationDetails;
 
     // Validate zkVerify data
     if (
-      !aggregationDetails.merkle_proof ||
-      !aggregationDetails.leaf_index ||
-      !aggregationDetails.number_of_leaves
+      !aggregationDetails.merkleProof ||
+      !aggregationDetails.leafIndex ||
+      !aggregationDetails.numberOfLeaves
     ) {
       return NextResponse.json(
         {
@@ -131,8 +131,8 @@ export async function POST(req: NextRequest) {
 
     // Execute airdrop transaction
     console.log("Executing airdrop transaction with zkVerify verification...");
-    const { leaf, leaf_index, number_of_leaves, merkle_proof } =
-      proofData.aggregation_details;
+    const { leaf, leafIndex, numberOfLeaves, merkleProof } =
+      proofData.aggregationDetails;
 
     const tx = await contract.airdropTokens(
       playerAddress,
@@ -142,9 +142,9 @@ export async function POST(req: NextRequest) {
       // zkVerify parameters - you'll need to determine these values
       proofData.domain_id, // domain_id
       proofData.aggregation_id, // aggregation_id as number
-      merkle_proof, // merkle_path
-      number_of_leaves, // leaf_count
-      leaf_index, // index
+      merkleProof, // merkle_path
+      numberOfLeaves, // leaf_count
+      leafIndex, // index
       leaf // public_inputs_hash (the leaf is the computed hash)
     );
 
