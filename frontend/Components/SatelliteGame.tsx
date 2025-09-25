@@ -615,22 +615,28 @@ const SatelliteGame: React.FC = () => {
       <div className="relative flex flex-col justify-center items-center min-h-screen bg-gray-900 font-mono">
         <div className="text-center space-y-6">
           <div className="text-cyan-400 text-4xl font-bold mb-4">
-            🚀 NEURAL SPACE HACK 🚀
+            🛰️ zkVERIFY BLOCK HACKER 🛰️
           </div>
           <div className="text-cyan-300 text-lg mb-8">
-            Connect your wallet to access the orbital mining system
+            Connect wallet to begin privacy-preserved orbital hacking
           </div>
-          <div className="mb-8">
-            <ConnectButton label="ESTABLISH NEURAL LINK" />
+          <div className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+            Your mining strategies remain encrypted while proving legitimate
+            block destruction via zero-knowledge proofs
+          </div>
+          <div className="mb-8 flex justify-center">
+            <ConnectButton label="INITIALIZE ZK PROTOCOL" />
           </div>
           {isConnecting && (
             <div className="text-yellow-400 text-sm animate-pulse">
-              Establishing connection...
+              Establishing encrypted connection...
             </div>
           )}
         </div>
-        <div className="absolute bottom-4 text-cyan-500 text-xs opacity-70">
-          WALLET AUTHENTICATION REQUIRED • SECURE BLOCKCHAIN PROTOCOL ACTIVE
+        <div className="absolute bottom-4 text-cyan-500 text-xs opacity-70 text-center">
+          ZERO-KNOWLEDGE VERIFICATION ACTIVE • PRIVACY-PRESERVED GAMING PROTOCOL
+          <br />
+          POWERED BY zkVERIFY + RISC0 • HORIZEN TESTNET
         </div>
       </div>
     );
