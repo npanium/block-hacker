@@ -5,7 +5,30 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+// zkVerify interface
+interface IVerifyProofAggregation {
+    function verifyProofAggregation(
+        uint256 _domainId,
+        uint256 _aggregationId,
+        bytes32 _leaf,
+        bytes32[] calldata _merklePath,
+        uint256 _leafCount,
+        uint256 _index
+    ) external view returns (bool);
+}
+
 contract GameToken is ERC20, Ownable, ReentrancyGuard {
+    // zkVerify proving system constants for RISC0
+    bytes32 public constant PROVING_SYSTEM_ID =
+        keccak256(abi.encodePacked("risc0"));
+    bytes32 public constant VERSION_HASH = sha256(abi.encodePacked(""));
+
+    // zkVerify contract address
+    address public zkVerify;
+
+    // Your RISC0 circuit's vkey (image ID)
+    bytes32 public vkey;
+
     // Track airdrops to prevent double-claims for same proof
     mapping(bytes32 => bool) public usedProofs;
 
@@ -39,8 +62,13 @@ contract GameToken is ERC20, Ownable, ReentrancyGuard {
 
     constructor(
         string memory _name,
-        string memory _symbol
+        string memory _symbol,
+        address _zkVerify,
+        bytes32 _vkey
     ) ERC20(_name, _symbol) Ownable(msg.sender) {
+        zkVerify = _zkVerify;
+        vkey = _vkey;
+
         // Initialize default reward tiers (18 decimals)
         rewardTiers.push(RewardTier(1, 50, 10 * 10 ** 18)); // 10 tokens for 1-50 blocks
         rewardTiers.push(RewardTier(51, 200, 50 * 10 ** 18)); // 50 tokens for 51-200 blocks
@@ -50,13 +78,82 @@ contract GameToken is ERC20, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Airdrop tokens to player after backend verification
+     * @dev Airdrop tokens with zkVerify proof verification
      * @param _player Address to receive tokens
      * @param _blocksDestroyed Number of blocks destroyed in game session
-     * @param _aggregationId Unique identifier from proof aggregation
+     * @param _aggregationId Unique identifier from proof aggregation (string for events)
      * @param _proofHash Hash of the proof data to prevent replays
+     * @param _domainId The domain ID from zkVerify
+     * @param _aggregationIdNum The aggregation ID as number for zkVerify call
+     * @param _merklePath Merkle proof path
+     * @param _leafCount Number of leaves in the merkle tree
+     * @param _index Leaf index in the merkle tree
+     * @param _publicInputsHash Hash of the public inputs from RISC0 circuit
      */
     function airdropTokens(
+        address _player,
+        uint256 _blocksDestroyed,
+        string memory _aggregationId,
+        bytes32 _proofHash,
+        uint256 _domainId,
+        uint256 _aggregationIdNum,
+        bytes32[] calldata _merklePath,
+        uint256 _leafCount,
+        uint256 _index,
+        bytes memory _publicInputsHash
+    ) external onlyOwner nonReentrant {
+        require(_player != address(0), "Invalid player address");
+        require(_blocksDestroyed > 0, "Must destroy at least 1 block");
+        require(!usedProofs[_proofHash], "Proof already used");
+
+        // Generate leaf digest for zkVerify verification
+        bytes32 leaf = keccak256(
+            abi.encodePacked(
+                PROVING_SYSTEM_ID,
+                vkey,
+                VERSION_HASH,
+                keccak256(abi.encodePacked(_publicInputsHash))
+            )
+        );
+
+        // Verify the aggregation proof with zkVerify
+        require(
+            IVerifyProofAggregation(zkVerify).verifyProofAggregation(
+                _domainId,
+                _aggregationIdNum,
+                leaf,
+                _merklePath,
+                _leafCount,
+                _index
+            ),
+            "Invalid aggregation proof"
+        );
+
+        // Mark proof as used to prevent replay attacks
+        usedProofs[_proofHash] = true;
+
+        // Calculate reward based on blocks destroyed
+        uint256 tokenReward = calculateReward(_blocksDestroyed);
+
+        // Update player stats
+        totalAirdropsReceived[_player] += tokenReward;
+        lastAirdropTime[_player] = block.timestamp;
+
+        // Mint tokens to player
+        _mint(_player, tokenReward);
+
+        emit TokensAirdropped(
+            _player,
+            _blocksDestroyed,
+            tokenReward,
+            _aggregationId
+        );
+    }
+
+    /**
+     * @dev Legacy airdrop function without zkVerify (for backwards compatibility)
+     */
+    function airdropTokensLegacy(
         address _player,
         uint256 _blocksDestroyed,
         string memory _aggregationId,
@@ -155,6 +252,20 @@ contract GameToken is ERC20, Ownable, ReentrancyGuard {
      */
     function emergencyMint(address _to, uint256 _amount) external onlyOwner {
         _mint(_to, _amount);
+    }
+
+    /**
+     * @dev Update zkVerify contract address
+     */
+    function updateZkVerify(address _newZkVerify) external onlyOwner {
+        zkVerify = _newZkVerify;
+    }
+
+    /**
+     * @dev Update vkey (image ID)
+     */
+    function updateVkey(bytes32 _newVkey) external onlyOwner {
+        vkey = _newVkey;
     }
 
     /**

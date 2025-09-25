@@ -15,7 +15,15 @@ export interface VerificationResult {
   session_hash: number[];
   is_valid: boolean;
 }
-
+export interface AggregationDetails {
+  receipt: string;
+  receipt_block_hash: string;
+  root: string;
+  leaf: string;
+  leaf_index: number;
+  number_of_leaves: number;
+  merkle_proof: string[];
+}
 export interface ProofResponse {
   success: boolean;
   proof_verified: boolean;
@@ -29,6 +37,8 @@ export interface ProofResponse {
   tx_hash?: string;
   block_hash?: string;
   aggregation_id?: number;
+  domain_id?: number;
+  aggregation_details?: AggregationDetails;
   error?: string;
 }
 
