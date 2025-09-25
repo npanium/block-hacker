@@ -3,6 +3,13 @@ import { useAirdrop } from "../app/hooks/useAirdrop";
 interface AirdropButtonProps {
   proofResult: {
     aggregationId?: number;
+    domainId?: number;
+    aggregationDetails?: {
+      leaf: string;
+      leaf_index: number;
+      number_of_leaves: number;
+      merkle_proof: string[];
+    };
     verification_result?: {
       is_valid: boolean;
     };

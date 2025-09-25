@@ -21,6 +21,13 @@ interface AirdropRequest {
   proofVerified: boolean;
   proofData?: {
     aggregation_id?: number;
+    domain_id?: number;
+    aggregation_details?: {
+      leaf: string;
+      leaf_index: number;
+      number_of_leaves: number;
+      merkle_proof: string[];
+    };
     verification_result?: {
       is_valid: boolean;
       session_hash: number[];
@@ -38,8 +45,8 @@ export async function POST(req: NextRequest) {
       proofVerified,
       proofData,
     } = body;
-    console.log("RPC: ", process.env.RPC_URL);
-    // Validate request
+
+    // Validate request - now including zkVerify data
     if (!playerAddress || !blocksDestroyed || !aggregationId) {
       return NextResponse.json(
         {
@@ -50,10 +57,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!proofVerified || !proofData?.verification_result?.is_valid) {
+    // Check for zkVerify aggregation details
+    if (!proofData?.aggregation_details) {
       return NextResponse.json(
         {
-          error: "Proof not verified or invalid",
+          error: "Missing zkVerify aggregation details",
+        },
+        { status: 400 }
+      );
+    }
+
+    const aggregationDetails = proofData.aggregation_details;
+
+    // Validate zkVerify data
+    if (
+      !aggregationDetails.merkle_proof ||
+      !aggregationDetails.leaf_index ||
+      !aggregationDetails.number_of_leaves
+    ) {
+      return NextResponse.json(
+        {
+          error: "Incomplete zkVerify aggregation data",
         },
         { status: 400 }
       );
@@ -106,12 +130,22 @@ export async function POST(req: NextRequest) {
     );
 
     // Execute airdrop transaction
-    console.log("Executing airdrop transaction...");
+    console.log("Executing airdrop transaction with zkVerify verification...");
+    const { leaf, leaf_index, number_of_leaves, merkle_proof } =
+      proofData.aggregation_details;
+
     const tx = await contract.airdropTokens(
       playerAddress,
       blocksDestroyed,
       aggregationId,
-      proofHash
+      proofHash,
+      // zkVerify parameters - you'll need to determine these values
+      proofData.domain_id, // domain_id
+      proofData.aggregation_id, // aggregation_id as number
+      merkle_proof, // merkle_path
+      number_of_leaves, // leaf_count
+      leaf_index, // index
+      leaf // public_inputs_hash (the leaf is the computed hash)
     );
 
     console.log(`Transaction sent: ${tx.hash}`);

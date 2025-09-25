@@ -126,18 +126,19 @@ export const ProofButtonWithAggregation: React.FC<ProofButtonProps> = ({
         journal: proof.journal,
         imageId: proof.image_id,
         tokensEarned:
-          proof.verification_result?.tokens_earned || totalBlocksDestroyed, // Fallback
+          proof.verification_result?.tokens_earned || totalBlocksDestroyed,
         executionTimeMs: proof.execution_time_ms,
         proofVerified: proof.proof_verified,
-        // Aggregation data (this is what you're actually getting)
+        // Aggregation data - use the exact field names from your Rust response
         relayerJobId: proof.relayer_job_id,
         txHash: proof.tx_hash,
         blockHash: proof.block_hash,
         aggregationId: proof.aggregation_id,
-        // Add the aggregation details for the airdrop
+        domainId: proof.domain_id,
+        aggregationDetails: proof.aggregation_details, // This now has proper typing
         verification_result: {
-          is_valid: proof.proof_verified || true, // Use proof_verified status
-          tokens_earned: totalBlocksDestroyed, // Use actual blocks destroyed
+          is_valid: proof.proof_verified || true,
+          tokens_earned: totalBlocksDestroyed,
         },
       });
     }

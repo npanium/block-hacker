@@ -51,15 +51,17 @@ struct ProofResponse {
     success: bool,
     proof_verified: bool,
     execution_time_ms: u128,
-    proof: Option<String>,   // Hex-encoded CBOR receipt
-    journal: Option<String>, // Hex-encoded journal
-    image_id: String,        // Hex-encoded image ID
+    proof: Option<String>,
+    journal: Option<String>,
+    image_id: String,
     verification_result: Option<VerificationResult>,
     // Relayer fields
     relayer_job_id: Option<String>,
     tx_hash: Option<String>,
     block_hash: Option<String>,
     aggregation_id: Option<u32>,
+    aggregation_details: Option<relayer_client::AggregationDetails>,
+    domain_id: Option<u32>,
     error: Option<String>,
 }
 
@@ -115,6 +117,12 @@ async fn health() -> Result<HttpResponse> {
 // Main proving endpoint
 async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse> {
     let start_time = Instant::now();
+    let mut relayer_job_id: Option<String> = None;
+    let mut tx_hash: Option<String> = None;
+    let mut block_hash: Option<String> = None;
+    let mut aggregation_id: Option<u32> = None;
+    let mut aggregation_details: Option<relayer_client::AggregationDetails> = None;
+    let domain_id = Some(113);
 
     println!("Received proof request: {:?}", req);
 
@@ -139,6 +147,8 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
                 tx_hash: None,
                 block_hash: None,
                 aggregation_id: None,
+                aggregation_details: None,
+                domain_id,
                 error: Some(e),
             }));
         }
@@ -165,6 +175,8 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
                 tx_hash: None,
                 block_hash: None,
                 aggregation_id: None,
+                aggregation_details: None,
+                domain_id,
                 error: Some(format!("Failed to create executor environment: {}", e)),
             }));
         }
@@ -193,6 +205,8 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
                 tx_hash: None,
                 block_hash: None,
                 aggregation_id: None,
+                aggregation_details: None,
+                domain_id,
                 error: Some(format!("Proof generation failed: {}", e)),
             }));
         }
@@ -229,6 +243,8 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
                 tx_hash: None,
                 block_hash: None,
                 aggregation_id: None,
+                aggregation_details: None,
+                domain_id,
                 error: Some(format!("Failed to decode journal: {}", e)),
             }));
         }
@@ -254,6 +270,8 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
             tx_hash: None,
             block_hash: None,
             aggregation_id: None,
+            aggregation_details: None,
+            domain_id,
             error: Some(format!("Failed to serialize receipt: {}", e)),
         }));
     }
@@ -283,16 +301,13 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
                 tx_hash: None,
                 block_hash: None,
                 aggregation_id: None,
+                aggregation_details: None,
+                domain_id,
                 error: Some(format!("Failed to create relayer client: {}", e)),
             }));
         }
     };
     let chain_id = 845320009; // Horizen testnet
-
-    let mut relayer_job_id = None;
-    let mut tx_hash = None;
-    let mut block_hash = None;
-    let mut aggregation_id = None;
 
     match relayer_client
         .submit_proof_with_aggregation(
@@ -317,6 +332,7 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
                     tx_hash = status_response.tx_hash;
                     block_hash = status_response.block_hash;
                     aggregation_id = status_response.aggregation_id;
+                    aggregation_details = status_response.aggregation_details;
                     info!("Proof successfully aggregated and published");
                 }
                 Err(e) => {
@@ -342,6 +358,8 @@ async fn prove_game_session(req: web::Json<ProofRequest>) -> Result<HttpResponse
         tx_hash,
         block_hash,
         aggregation_id,
+        aggregation_details,
+        domain_id,
         error: None,
     }))
 }

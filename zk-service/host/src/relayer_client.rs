@@ -57,7 +57,7 @@ pub struct RelayerStatusResponse {
     pub aggregation_details: Option<AggregationDetails>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct AggregationDetails {
     pub receipt: String,
     #[serde(rename = "receiptBlockHash")]
