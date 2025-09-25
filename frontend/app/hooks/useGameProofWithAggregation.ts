@@ -136,6 +136,7 @@ export const useGameProofWithAggregation = () => {
         }
 
         setProofResult(result);
+        console.log("[useGameProofWithAggregation] proofResult: ", result);
         return result;
       } catch (error) {
         const errorMessage =
