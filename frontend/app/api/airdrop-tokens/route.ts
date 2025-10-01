@@ -20,8 +20,8 @@ interface AirdropRequest {
   aggregationId: string;
   proofVerified: boolean;
   proofData?: {
-    aggregation_id?: number;
-    domain_id?: number;
+    aggregationId?: number;
+    domainId?: number;
     aggregationDetails?: {
       leaf: string;
       leafIndex: number;
@@ -140,8 +140,8 @@ export async function POST(req: NextRequest) {
       aggregationId,
       proofHash,
       // zkVerify parameters - you'll need to determine these values
-      proofData.domain_id, // domain_id
-      proofData.aggregation_id, // aggregation_id as number
+      proofData.domainId, // domain_id
+      proofData.aggregationId, // aggregation_id as number
       merkleProof, // merkle_path
       numberOfLeaves, // leaf_count
       leafIndex, // index
